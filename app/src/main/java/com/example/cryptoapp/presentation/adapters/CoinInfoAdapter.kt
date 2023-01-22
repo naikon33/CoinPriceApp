@@ -10,11 +10,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.example.cryptoapp.R
-import com.example.cryptoapp.data.network.ApiFactory.BASE_IMAGE_URL
 import com.example.cryptoapp.data.network.model.CoinInfoDto
 import com.example.cryptoapp.databinding.ItemCoinInfoBinding
 import com.example.cryptoapp.domain.entity.CoinPriceInfo
-import com.example.cryptoapp.utils.convertTimestampToTime
 import com.squareup.picasso.Picasso
 
 class CoinInfoAdapter(private val context: Context)
@@ -36,16 +34,16 @@ class CoinInfoAdapter(private val context: Context)
     override fun onBindViewHolder(holder: CoinInfoViewHolder, position: Int) {
         val coin = getItem(position)
         val binding=holder.binding
-        with(holder) {
+        with(holder.binding) {
             with(coin) {
                 val symbolsTemplate = context.resources.getString(R.string.symbols_template)
                 val lastUpdateTemplate = context.resources.getString(R.string.last_update_template)
-                binding.tvSymbols.text = String.format(symbolsTemplate, fromSymbol, toSymbol)
-                binding.tvPrice.text = price
-                binding.tvLastUpdate.text = String.format(
-                    lastUpdateTemplate, convertTimestampToTime(lastUpdate))
-                Picasso.get().load(BASE_IMAGE_URL+imageUrl).into(binding.ivLogoCoin)
-                itemView.setOnClickListener {
+                tvSymbols.text = String.format(symbolsTemplate, fromSymbol, toSymbol)
+                tvPrice.text = price
+                tvLastUpdate.text = String.format(
+                    lastUpdateTemplate, lastUpdate)
+                Picasso.get().load(imageUrl).into(binding.ivLogoCoin)
+                root.setOnClickListener {
                     onCoinClickListener?.onCoinClick(this)
                 }
             }
