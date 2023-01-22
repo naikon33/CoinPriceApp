@@ -6,8 +6,8 @@ import androidx.lifecycle.Transformations
 import com.example.cryptoapp.data.database.AppDatabase
 import com.example.cryptoapp.data.mapper.CoinMapper
 import com.example.cryptoapp.data.network.ApiFactory
-import com.example.cryptoapp.domain.CoinInfo
-import com.example.cryptoapp.domain.CoinRepository
+import com.example.cryptoapp.domain.entity.CoinPriceInfo
+import com.example.cryptoapp.domain.repository.CoinRepository
 import kotlinx.coroutines.delay
 
 class CoinRepositoryImpl(
@@ -19,7 +19,7 @@ class CoinRepositoryImpl(
 
     private val mapper = CoinMapper()
 
-    override fun getCoinInfoList(): LiveData<List<CoinInfo>> {
+    override fun getCoinListInfo(): LiveData<List<CoinPriceInfo>> {
         return Transformations.map(coinInfoDao.getPriceList()) {
             it.map {
                 mapper.mapDbModelToEntity(it)
@@ -27,20 +27,24 @@ class CoinRepositoryImpl(
         }
     }
 
-    override fun getCoinInfo(fromSymbol: String): LiveData<CoinInfo> {
+    override fun getCoinInfo(fromSymbol: String): LiveData<CoinPriceInfo> {
         return Transformations.map(coinInfoDao.getPriceInfoAboutCoin(fromSymbol)) {
             mapper.mapDbModelToEntity(it)
         }
     }
 
+
     override suspend fun loadData() {
         while (true) {
-            val topCoins = apiService.getTopCoinsInfo(limit = 50)
-            val fSyms = mapper.mapNamesListToString(topCoins)
-            val jsonContainer = apiService.getFullPriceList(fSyms = fSyms)
-            val coinInfoDtoList = mapper.mapJsonContainerToListCoinInfo(jsonContainer)
-            val dbModelList = coinInfoDtoList.map { mapper.mapDtoToDbModel(it) }
-            coinInfoDao.insertPriceList(dbModelList)
+            try {
+                val topCoins = apiService.getTopCoinsInfo(limit = 50)
+                val fSyms = mapper.mapNamesListToString(topCoins)
+                val jsonContainer = apiService.getFullPriceList(fSyms = fSyms)
+                val coinInfoDtoList = mapper.mapJsonContainerToListCoinInfo(jsonContainer)
+                val dbModelList = coinInfoDtoList.map { mapper.mapDtoToDbModel(it) }
+                coinInfoDao.insertPriceList(dbModelList)
+            } catch (e: Exception) {
+            }
             delay(10000)
         }
     }

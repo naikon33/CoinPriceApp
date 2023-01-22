@@ -4,7 +4,7 @@ import com.example.cryptoapp.data.database.CoinInfoDbModel
 import com.example.cryptoapp.data.network.model.CoinInfoDto
 import com.example.cryptoapp.data.network.model.CoinInfoJsonContainerDto
 import com.example.cryptoapp.data.network.model.CoinNamesListDto
-import com.example.cryptoapp.domain.CoinInfo
+import com.example.cryptoapp.domain.entity.CoinPriceInfo
 import com.google.gson.Gson
 
 class CoinMapper {
@@ -44,7 +44,7 @@ class CoinMapper {
         }?.joinToString(",") ?: ""
     }
 
-    fun mapDbModelToEntity(dbModel: CoinInfoDbModel) = CoinInfo(
+    fun mapDbModelToEntity(dbModel: CoinInfoDbModel) = CoinPriceInfo(
         fromSymbol = dbModel.fromSymbol,
         toSymbol = dbModel.toSymbol,
         price = dbModel.price,
